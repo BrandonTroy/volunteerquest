@@ -1,2 +1,4 @@
 Flask
 Flask-Login
+pymongo[srv]
+Flask-PyMongo
