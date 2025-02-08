@@ -3,3 +3,4 @@ Flask-Login
 pymongo[srv]
 Flask-PyMongo
 Flask-Cors
+Werkzeug

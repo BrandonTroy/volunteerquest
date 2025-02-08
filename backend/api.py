@@ -5,21 +5,10 @@ from pymongo.server_api import ServerApi
 from flask_pymongo import PyMongo
 from flask import current_app, g, Flask
 
-# Writing URI
-file = open("secret.txt", "r")
-password = file.readline()
-uri = f'mongodb+srv://eftucker:{password}@cluster0.mhhgb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+def create_db(app):
+    with app.app_context():
+        return PyMongo(app).cx["VolunteerQuest"]
 
-# Creating db object
-app = Flask(__name__)
-with app.app_context():
-    app.config["MONGO_URI"] = uri
-    db = PyMongo(app).cx["VolunteerQuest"]
-
-
-def add_user(name, age):
+def add_user(db, name, age):
     user_doc = {"name": name, "age": age}
     return db.users.insert_one(user_doc)
-
-if __name__ == '__main__':
-    app.run(debug=True)
