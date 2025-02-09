@@ -23,10 +23,8 @@ def register():
     email = user["email"]
 
     if db.users.find_one({'username': username}):
-        print("user already exists")
         return jsonify({'msg': "Username already exists!"}), 409
     else:
-        print("Created successfully!")
         db.users.insert_one({'username': username, 'password': generate_password_hash(password), 'email': email})
         return jsonify({'msg': "User created successfully!"}), 201
 

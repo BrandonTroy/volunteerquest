@@ -23,3 +23,8 @@ def create_app():
 
 def create_jwt(app):
     return JWTManager(app)
+
+
+def create_db(app):
+    with app.app_context():
+        return PyMongo(app).cx["VolunteerQuest"]
