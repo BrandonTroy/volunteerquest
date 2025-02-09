@@ -81,3 +81,8 @@ This is something that they can actually do. Ask them for tangible outputs from 
 
 percent_done = 2
 percent_done_2 = 3
+
+
+# from llm_calls import generate_next_chapter
+
+# generate_next_chapter(desc_current_chapter, theme_new_chapter, quest_real_desc, percent_done)

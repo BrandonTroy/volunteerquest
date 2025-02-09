@@ -83,7 +83,8 @@ def generate_next_chapter(desc_current_chapter, theme_current_chapter, quest_rea
     prompt_generate_next_chapter = PromptTemplate.from_template("""You are given a current stage of an existing storyline that is as follows = [{desc_current_chapter}] or just the description of the task(if story stage is null). 
 You have to WEAVE the old story, characters and theme and segue into the new theme(by a clever crossover among characters) with the next chapter for the STAGE = [{hero_journey}] and generate a unique continuing story based in the {theme_new_chapter} universe.
 For your context here is the descirpiton of the actual task that this new story should be a part of, REAL_TASK = [{quest_real_desc}]. I also want you to clearly state Text and the TASK for each. The TASK here would be a real world task but still hinting to the storyline. 
-This is something that they can actually do. Ask them for tangible outputs from these tasks for proof. OUTPUT should be in a JSON OBJECT format (not an array, no preamble) containing three things : 1) chapter_text(AROUND 150 words) 2) Task 3) Proof 
+This is something that they can actually do. Ask them for tangible outputs from these tasks for proof. 
+You ONLY output in JSON.  OUTPUT should be in a JSON OBJECT format (not an array, no preamble) containing three things : 1) chapter_text(AROUND 150 words) 2) Task 3) Proof. For example, {chapter_text : "Once upon a time", Task : "Plant a tree", Proof : "A picture of the tree planted"}.
 """)
     
 
