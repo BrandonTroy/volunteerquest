@@ -1,5 +1,5 @@
 from langchain_core.prompts import PromptTemplate
-from backend.prompt_library import hero_journey
+from prompt_library import hero_journey
 from langchain_groq import ChatGroq
 from langchain_core.output_parsers import JsonOutputParser 
 
@@ -51,9 +51,9 @@ def extract_rewards(text):
     response = chain_extract.invoke(input = {"text" : text})
     return response
 
-
+"""
 # mongo DB statements to fetch the data
-def get_percent_done(db, username):
+def get_percent_done():
     pass 
 
 # org_quest
@@ -66,12 +66,13 @@ def get_theme_new_chapter():
 def get_desc_current_chapter():
     pass
 
+    
 data = {
     "hero_journey" : hero_journey[get_percent_done()],
     "theme_new_chapter" : get_theme_new_chapter(),
     "quest_real_desc" : get_quest_real_desc(),
     "desc_current_chapter" : get_desc_current_chapter()}
-
+"""
 def generate_next_chapter(desc_current_chapter, theme_current_chapter, quest_real_desc, percent_done):
     """
     desc_current_chapter : str : Description of the current chapter.
@@ -91,7 +92,7 @@ This is something that they can actually do. Ask them for tangible outputs from 
     response = chain_extract.invoke(input = {"desc_current_chapter" : desc_current_chapter, 
                                              "theme_new_chapter" : theme_current_chapter,
                                                "quest_real_desc" : quest_real_desc, 
-                                                "hero_journey" : hero_journey[get_percent_done()],})
+                                                "hero_journey" : hero_journey[int(percent_done * 7)],})
     json_parser = JsonOutputParser()
     return json_parser.parse(response.content)
 
