@@ -92,6 +92,9 @@ def get_user():
         flatten_quests(user_from_db["current_quests"])
         if user_from_db["stories"]:
             flatten_quests(user_from_db["stories"][-1]["quests"])
+            
+        if user_from_db["guild"]:
+            user_from_db["guild"] = db.guilds.find_one({"_id": ObjectId(user_from_db["guild"])})
         return jsonify({'msg': "Success", 'data': user_from_db}), 200
     else:
         data = request.get_json()
@@ -123,7 +126,7 @@ def config():
     return jsonify({'msg': "Success", 'data': db.config.find()})
 
 
-@app.route("/user/complete_quest", methods=["POST"])
+@app.route("/user/complete-quest", methods=["POST"])
 @jwt_required()
 def user_complete_quest():
     try:
@@ -156,8 +159,10 @@ def user_complete_quest():
     # Grabbing the previous chapter, if it exists, otherwise empty text
     prev_chapter = story["quests"][-1] if len(story["quests"]) > 0 else ""
     percent_complete = len(story["quests"]) / story["max_length"]
-    org_quest = [quest for quest in user_from_db["current_quests"] if quest["id"] == data["quest_id"]][0]
-    story_quest = {"username": current_user, "org_quest": org_quest, "chapter": generate_next_chapter(prev_chapter, user_from_db["theme"], org_quest["description"], percent_complete)}
+    print(user_from_db["current_quests"], data["quest_id"])
+    org_quest_id = [quest for quest in user_from_db["current_quests"] if quest["org_quest"] == data["quest_id"]][0]["org_quest"]
+    org_quest = db.org_quest.find_one({"_id": ObjectId(org_quest_id)})
+    story_quest = {"username": current_user, "org_quest": org_quest_id, "chapter": generate_next_chapter(prev_chapter, user_from_db["theme"], org_quest["description"], percent_complete)}
 
     # Creating a new story - TODO: Update where this goes
     db.users.update_one(
@@ -237,7 +242,7 @@ def user_stats():
     data = request.get_json()
 
     # Returning an error if the user doesn't have enough coins
-    if db.user.find_one({"username": current_user})["stats"]["coins"] < data["coins"]:
+    if db.users.find_one({"username": current_user})["stats"]["coins"] < data["coins"]:
         return jsonify({"msg": "Insufficient Coins"}), 401
     
     db.users.update_one(
@@ -250,15 +255,15 @@ def user_stats():
 
 @app.route("/join-guild/<id>", methods=["POST"])
 @jwt_required()
-def join_guild():
+def join_guild(id):
     current_user = get_jwt_identity()
 
     db.guild.update_one(
-        {"_id": id},
+        {"_id": ObjectId(id)},
         {"$push": {"users": current_user}}
     )
 
-    return redirect("http://localhost:3000")
+    return jsonify({"msg": "success"}), 200
 
 
 @app.route("/guilds", methods=["POST"])

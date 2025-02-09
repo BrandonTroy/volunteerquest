@@ -25,10 +25,10 @@ export const getStories = async () => {
   }
 };
 
-export const getGuild  =async () => {
+export const completeQuest = async (id: string) => {  
   try {
-    const response = await getUser();
-    return {data: response.data.guild};
+    const response = axios.post(API_URL + `/user/complete-quest`, { quest_id: id });
+    return response;
   } catch (error) {
     console.log('Error fetching quests:', error);
     throw error;

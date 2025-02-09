@@ -62,6 +62,7 @@ export const updateInterests = async (interests: number[], theme: string) => {
 
 export const buy = async (coins: number) => {
   try {
+    console.log(coins);
     const response = await axios.post(API_URL + `/user/buy`, {
       coins
     });

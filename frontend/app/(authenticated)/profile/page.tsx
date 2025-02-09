@@ -88,7 +88,11 @@ const UserProfile: React.FC = () => {
         />
         <div className="mt-4 flex justify-center gap-6">
           <button
-            onClick={() => updateInterests(interests, theme)}
+              onClick={() => {
+                updateInterests(interests, theme)
+                const newUser = { ...user, interests, theme };
+                setUser(newUser);
+              }}
             className="px-4 py-2 bg-theme-green text-white rounded-lg"
           >
             Save

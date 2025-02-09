@@ -18,8 +18,8 @@ const RewardsPage = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 w-fit mx-auto p-5">
       {rewards.map((reward, index) => (
-        <div className="bg-black bg-opacity-50 rounded-xl h-full flex">
-          <Reward key={index} {...reward} />
+        <div key={index} className="bg-black bg-opacity-50 rounded-xl h-full flex">
+          <Reward {...reward} />
         </div>
         ))}
     </div>
