@@ -5,3 +5,7 @@ Flask-PyMongo
 Flask-Cors
 flask-jwt-extended
 Werkzeug
+praw
+langchain
+groq
+langchain_groq
