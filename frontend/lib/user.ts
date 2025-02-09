@@ -47,3 +47,15 @@ export const getUser = async () => {
   }
 };
 
+export const updatePreferences = async (sliders: number[], theme: string) => {
+  try {
+    const response = await axios.put(API_URL + `/user`, {
+      interests: sliders,
+      theme
+    });
+    return response.data;
+  } catch (error) {
+    console.log('Error updating user preferences:', error);
+    throw error;
+  }
+}

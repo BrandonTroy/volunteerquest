@@ -1,34 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getUser, logout, updatePreferences } from '@/lib/user';
 
 const UserProfile: React.FC = () => {
-  // State for editing profile info
-  const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState('John Doe');
-  const [username, setUsername] = useState('john_doe');
-  const [email, setEmail] = useState('johndoe@example.com');
-  const [profilePic, setProfilePic] = useState('');
+  const [user, setUser] = useState<any>(null);
+  const [sliders, setSliders] = useState<number[]>([5, 5, 5, 5, 5]);
+  const [theme, setTheme] = useState<string>('');
 
-  // State for preferences
-  const [sliders, setSliders] = useState([5, 5, 5, 5, 5]);
-  const [theme, setTheme] = useState('');
-
-  // State for stats
-  const [xp, setXp] = useState(1000);
-  const [coins, setCoins] = useState(250);
-  const [hours, setHours] = useState(45);
+  useEffect(() => {
+    getUser().then(response => setUser(response.data));
+  }, []);
 
   // Handle changes in sliders
   const handleSliderChange = (index: number, value: number) => {
     const newSliders = [...sliders];
     newSliders[index] = value;
     setSliders(newSliders);
-  };
-
-  // Save preferences
-  const handleSavePreferences = () => {
-    alert('Preferences saved!');
   };
 
   // Reset preferences
@@ -38,12 +26,7 @@ const UserProfile: React.FC = () => {
     alert('Preferences reset!');
   };
 
-  // Handle editing
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
-
-  // Function to generate initials from name
+  // Function to generate initials from user.name
   const getInitials = (fullName: string) => {
     const nameParts = fullName.split(' ');
     const initials = nameParts.map((part) => part.charAt(0).toUpperCase()).join('');
@@ -53,27 +36,19 @@ const UserProfile: React.FC = () => {
   return (
     <div className="flex my-5 max-w-[80rem] gap-5 mx-auto justify-center bg-black bg-opacity-50 rounded-xl">
       {/* Info Column */}
-      <div className="flex flex-col flex-stretch justify-center w-1/3 p-6 text-center items-center">
-        {profilePic ? (
-          <img
-            src={profilePic}
-            alt="Profile"
-            className="w-48 h-48 mx-auto rounded-full border-4 border-primary"
-          />
-        ) : (
-          <div
-            className="w-48 h-48 mx-auto flex items-center justify-center rounded-full bg-white text-black font-bold text-2xl"
-          >
-            {getInitials(name)}
-          </div>
-        )}
+      <div className="flex flex-col flex-stretch justify-center w-1/3 p-6 text-center items-center">   
+        <div
+          className="w-48 h-48 mx-auto flex items-center justify-center rounded-full bg-white text-black font-bold text-2xl"
+        >
+          {getInitials(user.name)}
+        </div>
         <div className="mt-6 text-foreground">
-          <h3 className="text-3xl font-semibold mb-2">{name}</h3>
-          <p className="text-xl text-background-light mb-2">@{username}</p>
-          <p className="text-lg text-background-light">{email}</p>
+          <h3 className="text-3xl font-semibold mb-2">{user.name}</h3>
+          <p className="text-xl text-background-light mb-2">@{user.username}</p>
+          <p className="text-lg text-background-light">{user.email}</p>
         </div>
         <button
-          onClick={() => alert('Logging out...')}
+          onClick={() => logout()}
           className="mt-6 px-4 py-2 bg-theme-red text-white rounded-lg hover:bg-theme-yellow transition-colors"
         >
           Logout
@@ -105,7 +80,7 @@ const UserProfile: React.FC = () => {
         />
         <div className="mt-4 flex justify-center gap-6">
           <button
-            onClick={handleSavePreferences}
+            onClick={() => updatePreferences(sliders, theme)}
             className="px-4 py-2 bg-theme-green text-white rounded-lg"
           >
             Save
@@ -122,9 +97,9 @@ const UserProfile: React.FC = () => {
       {/* Stats Column */}
       <div className="flex flex-col flex-stretch justify-center w-1/3 p-6 py-auto text-center text-background-light">
         <h3 className="text-2xl font-semibold text-foreground mb-6">Stats</h3>
-        <p className="text-2xl mb-4">XP: <span className="font-bold">{xp}</span></p>
-        <p className="text-2xl mb-4">Coins: <span className="font-bold">{coins}</span></p>
-        <p className="text-2xl ">Hours: <span className="font-bold">{hours}</span></p>
+        <p className="text-2xl mb-4">XP: <span className="font-bold">{user.stats.xp}</span></p>
+        <p className="text-2xl mb-4">Coins: <span className="font-bold">{user.stats.coins}</span></p>
+        <p className="text-2xl ">Hours: <span className="font-bold">{user.stats.hours}</span></p>
       </div>
 
     </div>
