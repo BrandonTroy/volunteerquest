@@ -17,7 +17,7 @@ export const login = async (username: string, password: string) => {
   }
 }
 
-export const register = async (username: string, password: string, email: string) => {
+export const register = async (name: string, username: string,  email: string, password: string) => {
   try {
     const response = await axios.post(API_URL + '/register', {
       username,
@@ -30,6 +30,11 @@ export const register = async (username: string, password: string, email: string
     console.log('Registration failed:', error);
     throw error;
   }
+}
+
+export const logout = () => {
+  document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  window.location.href = '/';
 }
 
 export const getUser = async () => {

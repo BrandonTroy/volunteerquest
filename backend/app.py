@@ -38,10 +38,14 @@ def register():
 
     if db.users.find_one({'username': username}):
         return jsonify({'msg': "Username already exists!"}), 409
-    else:
-        db.users.insert_one({'username': username, 'password': generate_password_hash(password), 'email': email, "interests": interests, "bio": bio, 
-                             "current_quests": current_quests, "stats": stats, "friends": friends, "guild": guild, "stories": stories, "theme": theme})
-        return jsonify({'msg': "User created successfully!"}), 201
+    
+    db.users.insert_one({'username': username, 'password': generate_password_hash(password), 'email': email, "interests": interests, "bio": bio, 
+                            "current_quests": current_quests, "stats": stats, "friends": friends, "guild": guild, "stories": stories, "theme": theme})
+    
+    token = create_access_token(identity=username)
+    response = make_response("token")
+    response.set_cookie("token", token, max_age=3600, samesite='Lax', secure=False)
+    return response, 200
 
 
 # Tested - Successful
