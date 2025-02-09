@@ -1,11 +1,5 @@
 import React from 'react';
 import '../globals.css'; // Global Styles
-import { Jersey_10 } from "next/font/google";
-
-const jersey10 = Jersey_10({
-  weight: "400",
-  variable: "--font-jersey10",
-});
 
 const LoginLayout = ({ children }: { children: React.ReactNode }) => {
     return (

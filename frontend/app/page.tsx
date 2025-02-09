@@ -1,4 +1,4 @@
-import { get } from "http";
+
 import "./globals.css";
 import { getUser } from "@/actions/user";
 
