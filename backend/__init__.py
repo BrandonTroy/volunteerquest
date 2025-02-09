@@ -16,7 +16,8 @@ def create_app():
         app.config["MONGO_URI"] = uri
         app.config["JWT_SECRET_KEY"] = '3d0a4d08c094628a051fb6ee8a825f4f'
         app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
-        app.config["JWT_TOKEN_LOCATION"] = ["headers"]
+        app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+        app.config["JWT_ACCESS_COOKIE_NAME"] = "token"
 
     return app
 

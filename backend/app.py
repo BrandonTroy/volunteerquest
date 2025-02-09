@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import Flask, jsonify, request, redirect, url_for, render_template, flash
+from flask import Flask, jsonify, request, redirect, url_for, render_template, flash, make_response
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -62,7 +62,9 @@ def login():
     
     if user and check_password_hash(user["password"], password):
             token = create_access_token(identity=user['username'])
-            return jsonify(access_token=token), 200
+            response = make_response("token")
+            response.set_cookie("token", token, max_age=3600)
+            return response, 200
     
     return jsonify({'msg': "The username or password is incorrect"}), 401
 
