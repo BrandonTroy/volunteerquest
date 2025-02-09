@@ -5,7 +5,7 @@ export default function Test({children,}: Readonly<{children: React.ReactNode;}>
     <>
       <nav className="bg-gray-800 p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <Link href="/">
+          <Link href="/quests">
             <div className="flex gap-2 text-white text-lg font-bold">
               <img className="mx-auto h-10 w-auto" src="/logo/transparent.png" alt="VolunteerQuest Logo" />
               VolunteerQuest

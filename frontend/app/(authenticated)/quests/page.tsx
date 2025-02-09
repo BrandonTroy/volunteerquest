@@ -15,7 +15,7 @@ const quests = [
 
 const QuestsPage = () => {
   return (
-    <div className="bg-black bg-opacity-50 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-10 w-fit mx-auto rounded-xl p-5">
+    <div className="bg-black bg-opacity-50 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 my-10 w-fit mx-auto rounded-xl p-5">
       {quests.map((quest, index) => (
         <PotentialQuest key={index} {...quest} />
       ))}

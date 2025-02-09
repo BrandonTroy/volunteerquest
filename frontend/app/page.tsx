@@ -31,20 +31,11 @@ function SplashPage() {
   );
 }
 
-function Home() {
-  return (
-    <main>You are logged in lol</main>
-  );
-}
-
-
 export default function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (localStorage.getItem("returning") !== "true") {
-      setIsLoading(false);
       return;
     }
     
@@ -52,10 +43,14 @@ export default function HomePage() {
       setIsAuthenticated(true);
     }).catch(() => {
       setIsAuthenticated(false);
-    }).finally(() => {
-      setIsLoading(false);
     });
   }, []);
 
-  return isLoading || !isAuthenticated ? <SplashPage /> : <Home />;
+  useEffect(() => {
+    if (isAuthenticated) {
+      window.location.href = "/quests";
+    }
+  }, [isAuthenticated]);
+
+  return <SplashPage />;
 }

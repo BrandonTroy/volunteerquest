@@ -34,7 +34,7 @@ export const register = async (username: string, password: string, email: string
 
 export const getUser = async () => {
   try {
-    const response = await axios.get(API_URL + `/user/data`);
+    const response = await axios.get(API_URL + `/user`);
     return response.data;
   } catch (error) {
     console.log('Error fetching user data:', error);
