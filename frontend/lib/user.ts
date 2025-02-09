@@ -47,10 +47,10 @@ export const getUser = async () => {
   }
 };
 
-export const updatePreferences = async (sliders: number[], theme: string) => {
+export const updateInterests = async (interests: number[], theme: string) => {
   try {
     const response = await axios.put(API_URL + `/user`, {
-      interests: sliders,
+      interests,
       theme
     });
     return response.data;

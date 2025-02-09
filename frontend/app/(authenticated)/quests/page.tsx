@@ -1,8 +1,8 @@
 "use client";
 
-import { getQuests } from '@/lib/quests';
-import React, {useEffect, useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import PotentialQuest from '@/components/potentialQuest';
+import { getQuests } from '@/lib/quests';
 
 // const quests = [
 //   { title: "Quest 1", org: "Organization 1", date: "00/00/0000", description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Id optio natus assumenda nulla, ea perspiciatis, recusandae eos doloribus molestias aliquam commodi? Modi obcaecati nulla vitae aut temporibus, quia sunt consectetur." },
@@ -17,23 +17,19 @@ import PotentialQuest from '@/components/potentialQuest';
 // ];
 
 const QuestsPage = () => {
-  const [quests, setQuests] = useState<any>([]);
+  const [quests, setQuests] = useState<any>(null);
 
   useEffect(() => {
-    const fetchQuests = async () => {
-      getQuests().then(respone => {
-        console.log(respone.data);
-        setQuests(respone.data)
-      });
-    };
-
-    fetchQuests();
+    getQuests().then((response) => {
+      console.log(response.data);
+      setQuests(response.data);
+    });
   }, []);
   
   return (
     <div className="bg-black bg-opacity-50 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 my-10 w-fit mx-auto rounded-xl p-5">
-      {quests.map((quest: any, index: any) => (
-        <PotentialQuest key={index} {...quest} />
+      {quests?.map((quest: any, index: any) => (
+        <PotentialQuest key={index} {...quest.org_quest} />
       ))}
     </div>
   );

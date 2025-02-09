@@ -1,32 +1,36 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getUser, logout, updatePreferences } from '@/lib/user';
+import { getUser, logout, updateInterests } from '@/lib/user';
 
 const UserProfile: React.FC = () => {
   const [user, setUser] = useState<any>(null);
-  const [sliders, setSliders] = useState<number[]>([5, 5, 5, 5, 5]);
+  const [interests, setInterests] = useState<any>({});
   const [theme, setTheme] = useState<string>('');
 
   useEffect(() => {
-    getUser().then(response => setUser(response.data));
+    getUser().then(response => {
+      setUser(response.data);
+      setTheme(response.data.theme);
+      setInterests(response.data.interests);
+      console.log(response.data)
+    });
   }, []);
 
-  // Handle changes in sliders
-  const handleSliderChange = (index: number, value: number) => {
-    const newSliders = [...sliders];
-    newSliders[index] = value;
-    setSliders(newSliders);
+  // Handle changes in interests
+  const handleSliderChange = (key: string, value: number) => {
+    const newInterests = { ...interests };
+    newInterests[key] = value;
+    setInterests(newInterests);
   };
 
-  // Reset preferences
-  const handleResetPreferences = () => {
-    setSliders([5, 5, 5, 5, 5]);
-    setTheme('');
-    alert('Preferences reset!');
+  // Reset interests
+  const handleResetInterests = () => {
+    setInterests(user.interests);
+    setTheme(user.theme);
   };
 
-  // Function to generate initials from user.name
+  // Function to generate initials from name
   const getInitials = (fullName: string) => {
     const nameParts = fullName.split(' ');
     const initials = nameParts.map((part) => part.charAt(0).toUpperCase()).join('');
@@ -34,41 +38,45 @@ const UserProfile: React.FC = () => {
   };
 
   return (
+    user ?
     <div className="flex my-5 max-w-[80rem] gap-5 mx-auto justify-center bg-black bg-opacity-50 rounded-xl">
       {/* Info Column */}
-      <div className="flex flex-col flex-stretch justify-center w-1/3 p-6 text-center items-center">   
+      <div className="flex flex-col flex-stretch w-[30%] py-6 items-center">   
         <div
-          className="w-48 h-48 mx-auto flex items-center justify-center rounded-full bg-white text-black font-bold text-2xl"
+          className="w-40 h-40 mx-auto flex items-center justify-center rounded-full bg-white text-black font-bold text-3xl"
         >
           {getInitials(user.name)}
         </div>
         <div className="mt-6 text-foreground">
-          <h3 className="text-3xl font-semibold mb-2">{user.name}</h3>
-          <p className="text-xl text-background-light mb-2">@{user.username}</p>
+          <h3 className="text-lg font-semibold">{user.name}</h3>
+          <p className="text-lg text-background-light">@{user.username}</p>
           <p className="text-lg text-background-light">{user.email}</p>
         </div>
         <button
           onClick={() => logout()}
-          className="mt-6 px-4 py-2 bg-theme-red text-white rounded-lg hover:bg-theme-yellow transition-colors"
+          className="mt-6 px-4 py-2 bg-theme-red text-white rounded-lg"
         >
           Logout
         </button>
       </div>
 
-      {/* Preferences Column */}
-      <div className="w-1/3 p-6 bg-background bg-opacity-50">
-        <h3 className="text-xl font-semibold text-foreground mb-4">Preferences</h3>
-        {sliders.map((slider, index) => (
-          <div key={index} className="mb-4 flex items-center">
-            <input
-              type="range"
-              min="0"
-              max="10"
-              value={slider}
-              onChange={(e) => handleSliderChange(index, parseInt(e.target.value))}
-              className="w-full"
-            />
-            <p className="text-lg text-white ml-4">{slider}</p>
+      {/* Interests Column */}
+      <div className="w-[40%] p-6 bg-background bg-opacity-50">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Interests</h3>
+        {Object.entries(interests).map(([name, value]: any, index: any) => (
+          <div key={index} className="mb-4">
+            <div className="-mb-1">{name}</div>
+            <div className="flex items-center">
+              <input
+                type="range"
+                min="0"
+                max="10"
+                value={value * 10}
+                onChange={(e) => handleSliderChange(name, parseInt(e.target.value) / 10)}
+                className="w-full"
+              />
+              <p className="text-white ml-4">{value * 10}</p>
+            </div>
           </div>
         ))}
         <textarea
@@ -76,17 +84,17 @@ const UserProfile: React.FC = () => {
           onChange={(e) => setTheme(e.target.value)}
           placeholder="Theme"
           rows={4}
-          className="w-full p-2 mt-4 border border-background-accent rounded-lg"
+          className="w-full p-2 mt-4 border text-background border-background-accent rounded-lg"
         />
         <div className="mt-4 flex justify-center gap-6">
           <button
-            onClick={() => updatePreferences(sliders, theme)}
+            onClick={() => updateInterests(interests, theme)}
             className="px-4 py-2 bg-theme-green text-white rounded-lg"
           >
             Save
           </button>
           <button
-            onClick={handleResetPreferences}
+            onClick={handleResetInterests}
             className="px-4 py-2 bg-theme-red text-white rounded-lg"
           >
             Reset
@@ -95,14 +103,15 @@ const UserProfile: React.FC = () => {
       </div>
 
       {/* Stats Column */}
-      <div className="flex flex-col flex-stretch justify-center w-1/3 p-6 py-auto text-center text-background-light">
-        <h3 className="text-2xl font-semibold text-foreground mb-6">Stats</h3>
-        <p className="text-2xl mb-4">XP: <span className="font-bold">{user.stats.xp}</span></p>
-        <p className="text-2xl mb-4">Coins: <span className="font-bold">{user.stats.coins}</span></p>
-        <p className="text-2xl ">Hours: <span className="font-bold">{user.stats.hours}</span></p>
+      <div className="flex flex-col flex-stretch w-[30%] p-6 py-auto text-center text-background-light">
+        <h3 className="text-lg font-semibold text-foreground mb-6">Stats</h3>
+        <p className="text-lg mb-4">XP: <span className="font-bold">{user.stats.xp}</span></p>
+        <p className="text-lg mb-4">Coins: <span className="font-bold">{user.stats.coins}</span></p>
+        <p className="text-lg ">Hours: <span className="font-bold">{user.stats.hours}</span></p>
       </div>
 
     </div>
+    : <div>Loading...</div>
   );
 };
 

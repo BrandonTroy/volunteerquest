@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from flask_cors import CORS
 import datetime
+from bson import ObjectId
 
 from __init__ import create_app, create_jwt, create_db
 
@@ -79,8 +80,13 @@ def get_user():
     if not user_from_db:
         return jsonify({'msg': "Profile not found."}), 404
 
-    if request.method == "GET":    
-        return jsonify({'msg': "Success", 'payload': user_from_db}), 200
+    if request.method == "GET":
+        # TODO: add this unwrapping for storyQuests as well
+        for quest in user_from_db["current_quests"]:
+            print(quest["org_quest"])
+            quest["org_quest"] = db.org_quest.find_one({"_id": ObjectId(quest["org_quest"])})
+            
+        return jsonify({'msg': "Success", 'data': user_from_db}), 200
     else:
         data = request.get_json()
         update_fields = {}
@@ -108,7 +114,7 @@ def get_user():
 
 @app.route("/config", methods=["GET"])
 def config():
-    return jsonify({'msg': "Success", 'payload': db.config.find()})
+    return jsonify({'msg': "Success", 'data': db.config.find()})
 
 
 @app.route("/user/complete_quest", methods=["POST"])
@@ -146,7 +152,7 @@ def org():
     if request.method == "GET":
         # Getting information about an organization
         id = org["id"]
-        return jsonify({'msg': "Success", 'payload': db.orgs.find({'id': id})}), 200
+        return jsonify({'msg': "Success", 'data': db.orgs.find({'id': id})}), 200
     else:
         # Creating a new organization
         username = org["username"]  # Required
@@ -164,7 +170,7 @@ def guild():
     if request.method == "GET":
         # Getting a guild by ID
         id = guild["id"]
-        return jsonify({"msg": "Success", "payload": db.guilds.find({"id": id})}), 200
+        return jsonify({"msg": "Success", "data": db.guilds.find({"id": id})}), 200
     elif request.method == "POST": 
         # Creating a new guild
         user_id = guild["user_id"]  # Required, the id of the user who started the guild
