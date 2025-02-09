@@ -59,3 +59,15 @@ export const updateInterests = async (interests: number[], theme: string) => {
     throw error;
   }
 }
+
+export const buy = async (coins: number) => {
+  try {
+    const response = await axios.post(API_URL + `/user/buy`, {
+      coins
+    });
+    return response.data;
+  } catch (error) {
+    console.log('Error buying reward:', error);
+    throw error;
+  }
+}
