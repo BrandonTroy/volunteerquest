@@ -20,12 +20,17 @@ jwt = create_jwt(app)
 def jwt_required_redirect():
     def decorator(func):
         @wraps(func)
-        @jwt_required()
+        @jwt_required(optional=True)  # Optional so the execution enters the wrapper methods
         def wrapper(*args, **kwargs):
             try:
                 current_user = get_jwt_identity()
             except:
+                # This shouldn't run, but for safety it's here
                 return redirect(url_for('login'))
+        
+            # Redirecting if current user is null
+            if not current_user:
+                return redirect(url_for("login"))
             
             # Calling the original function if good
             return func(*args, **kwargs)
@@ -169,7 +174,5 @@ def delete_template():
         return jsonify({'msg': 'Access Token Expired'}), 404
     
 
-
 if __name__ == '__main__':
     app.run(debug=True)
-
