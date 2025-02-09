@@ -1,6 +1,8 @@
+import { get } from "http";
 import "./globals.css";
+import { getUser } from "@/actions/user";
 
-export default function SplashPage() {
+function SplashPage() {
   return (
     <main>
       <div className="background flex flex-col items-center justify-center">
@@ -20,4 +22,20 @@ export default function SplashPage() {
       </div>
     </main>
   );
+}
+
+function Home() {
+  return (
+    <main>You are logged in lol</main>
+  );
+}
+
+
+export default async function HomePage() {
+  try {
+    await getUser();
+    return <Home />;
+  } catch {
+    return <SplashPage />;
+  }
 }

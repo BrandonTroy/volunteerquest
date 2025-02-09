@@ -7,11 +7,13 @@ from flask_pymongo import PyMongo
 from flask import current_app, g, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
+from flask_cors import CORS
 
 from __init__ import create_app, create_jwt, create_db
 
 
 app = create_app()
+CORS(app, supports_credentials=True, origins=["*"])
 db = create_db(app)
 jwt = create_jwt(app)
 
@@ -63,7 +65,7 @@ def login():
     if user and check_password_hash(user["password"], password):
             token = create_access_token(identity=user['username'])
             response = make_response("token")
-            response.set_cookie("token", token, max_age=3600)
+            response.set_cookie("token", token, max_age=3600, samesite='None', secure=False)
             return response, 200
     
     return jsonify({'msg': "The username or password is incorrect"}), 401

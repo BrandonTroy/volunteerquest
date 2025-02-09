@@ -1,16 +1,29 @@
-'use client'
+'use client';
+
+import { login } from "@/actions/user";
 
 const LoginPage = () => {
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    const username = (document.getElementById("username") as HTMLInputElement)?.value;
+    const password = (document.getElementById("password") as HTMLInputElement)?.value;
+    login(username, password).then(() => {
+        window.location.href = "/";
+    }).catch((error) => {
+        console.error("Login failed:", error);
+    });
+  };
 
   return (
     <div className="w-80">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <img className="mx-auto h-20 w-auto" src="/logo/transparent.png" alt="VolunteerQuest Logo" />
-            <h2 className="text-center font-bold tracking-tight text-lg">Resume Your Journey</h2>
+            <h2 className="text-center font-bold text-lg">Resume Your Journey</h2>
         </div>
 
         <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form className="space-y-6" action="#" method="POST">
+            <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmit}>
             <div>
                 <label htmlFor="username" className="block font-base">Username</label>
                 <div className="mt-2">
