@@ -1,6 +1,20 @@
 'use client'
 
+import { register } from "@/lib/user";
+
 const SignupPage = () => {
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    const username = (document.getElementById("username") as HTMLInputElement)?.value;
+    const password = (document.getElementById("password") as HTMLInputElement)?.value;
+    const email = (document.getElementById("email") as HTMLInputElement)?.value;
+    register(username, password, email).then(() => {
+      window.location.href = "/";
+    }).catch((error: any) => {
+      console.error("Registration failed:", error);
+    });
+  };
 
   return (
     <div className="background flex items-center justify-center">
@@ -12,7 +26,7 @@ const SignupPage = () => {
           </div>
 
           <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form className="space-y-6" action="#" method="POST">
+            <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block font-base">Email</label>
               <div className="mt-2">

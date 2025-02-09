@@ -22,7 +22,7 @@ function SplashPage() {
             or just love a good challenge, VolunteerQuest makes giving back more engaging and rewarding than ever.
           </div>
           <div className="flex flex-row gap-5 mt-10 justify-center">
-            <a href="/signup" className="text-white bg-primary hover:bg-primary-dark  focus:outline-white font-medium rounded-lg text-sm px-5 py-2.5">Sign Up</a>
+            <a href="/signup" className="text-white bg-primary hover:bg-primary-dark focus:outline-white font-medium rounded-lg text-sm px-5 py-2.5">Sign Up</a>
             <a href="/login" className="text-white bg-background-accent hover:bg-background-light focus:outline-white font-medium rounded-lg text-sm px-5 py-2.5">Log In</a>
           </div>
         </div>
