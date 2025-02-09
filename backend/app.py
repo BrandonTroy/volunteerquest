@@ -1,3 +1,4 @@
+from functools import wraps
 from flask import Flask, jsonify, request, redirect, url_for, render_template, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from pymongo.mongo_client import MongoClient
@@ -13,6 +14,23 @@ from __init__ import create_app, create_jwt, create_db
 app = create_app()
 db = create_db(app)
 jwt = create_jwt(app)
+
+
+# Requires the JWT Token and redirects to the login page if not present
+def jwt_required_redirect():
+    def decorator(func):
+        @wraps(func)
+        @jwt_required()
+        def wrapper(*args, **kwargs):
+            try:
+                current_user = get_jwt_identity()
+            except:
+                return redirect(url_for('login'))
+            
+            # Calling the original function if good
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 
 @app.route('/register', methods=["POST"])
@@ -45,15 +63,24 @@ def login():
 
 
 @app.route("/user/data", methods=["GET"])
-@jwt_required()
+@jwt_required_redirect()
 def email():
-    current_user = get_jwt_identity()
+    try:
+        current_user = get_jwt_identity()
+    except:
+        return redirect(url_for('login'))
+    
     user_from_db = db.users.find_one({'username': current_user})
     
     if user_from_db:
         return jsonify({'msg': "Success", 'payload': user_from_db}), 200
     else:
         return jsonify({'msg': "Profile not found."}), 404
+    
+
+@app.route("/config/data", methods=["GET"])
+def config():
+    return jsonify({'msg': "Success", 'payload': db.config.find()})
     
 
 # Deprecated
