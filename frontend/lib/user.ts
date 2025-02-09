@@ -1,9 +1,7 @@
-'use server';
+'use client';
 
-import axios from 'axios';
+import axios from '@/lib/axios';
 import { API_URL } from '@/config';
-
-axios.defaults.withCredentials = true;
 
 export const login = async (username: string, password: string) => {
   try {
@@ -11,6 +9,7 @@ export const login = async (username: string, password: string) => {
       username,
       password,
     });
+    localStorage.setItem('returning', 'true');
     return response.data;
   } catch (error) {
     console.log('Login failed:', error);

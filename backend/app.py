@@ -13,31 +13,9 @@ from __init__ import create_app, create_jwt, create_db
 
 
 app = create_app()
-CORS(app, supports_credentials=True, origins=["*"])
+CORS(app, origins="*", supports_credentials=True)
 db = create_db(app)
 jwt = create_jwt(app)
-
-
-# Requires the JWT Token and redirects to the login page if not present
-def jwt_required_redirect():
-    def decorator(func):
-        @wraps(func)
-        @jwt_required(optional=True)  # Optional so the execution enters the wrapper methods
-        def wrapper(*args, **kwargs):
-            try:
-                current_user = get_jwt_identity()
-            except:
-                # This shouldn't run, but for safety it's here
-                return redirect(url_for('login'))
-        
-            # Redirecting if current user is null
-            if not current_user:
-                return redirect(url_for("login"))
-            
-            # Calling the original function if good
-            return func(*args, **kwargs)
-        return wrapper
-    return decorator
 
 
 @app.route('/register', methods=["POST"])
@@ -65,19 +43,19 @@ def login():
     if user and check_password_hash(user["password"], password):
             token = create_access_token(identity=user['username'])
             response = make_response("token")
-            response.set_cookie("token", token, max_age=3600, samesite='None', secure=False)
+            response.set_cookie("token", token, max_age=3600, samesite='Lax', secure=False)
             return response, 200
     
     return jsonify({'msg': "The username or password is incorrect"}), 401
 
 
 @app.route("/user/data", methods=["GET"])
-@jwt_required_redirect()
-def email():
+@jwt_required()
+def get_user():
     try:
         current_user = get_jwt_identity()
     except:
-        return redirect(url_for('login'))
+        return 401
     
     user_from_db = db.users.find_one({'username': current_user})
     
@@ -113,7 +91,7 @@ def create_template():
         else:
             return jsonify({'msg': "Template already exists on your profile"}), 404
     else:
-        return jsonify({'msg': "Access Token Expired"}), 404
+        return jsonify({'msg': "Access Token Expired"}), 401
     
 
 # Deprecated
@@ -144,7 +122,7 @@ def update_template():
         # Returning message if template exists
         else: return jsonify({'msg': 'Template not exists on your profile'}), 404
     else:
-        return jsonify({'msg': 'Access Token Expired'}), 404
+        return jsonify({'msg': 'Access Token Expired'}), 401
         
 
 # Deprecated
@@ -175,7 +153,7 @@ def delete_template():
         # Returning message if template exists
         else: return jsonify({'msg': 'Template not exists on your profile'}), 404
     else:
-        return jsonify({'msg': 'Access Token Expired'}), 404
+        return jsonify({'msg': 'Access Token Expired'}), 401
     
 
 if __name__ == '__main__':

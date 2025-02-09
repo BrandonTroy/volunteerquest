@@ -27,14 +27,14 @@ export default {
         serif: ["Jersey 10", "serif"],
       },
       fontSize: {
-        xs: '1.25rem',
-        sm: '1.5rem',
-        base: '1.5rem',
-        lg: '2.25rem',
-        xl: '3rem',
-        '2xl': '3.5rem'
+        xs: ['1.25rem', { letterSpacing: '0.07em', lineHeight: '1.1em' }],
+        sm: ['1.5rem', { letterSpacing: '0.06em', lineHeight: '1.1em' }],
+        base: ['1.5rem', { letterSpacing: '0.05em', lineHeight: '1.1em' }],
+        lg: ['2.25rem', { letterSpacing: '0.05em', lineHeight: '1.1em' }],
+        xl: ['3rem', { letterSpacing: '0.05em', lineHeight: '1.1em' }],
+        '2xl': ['3.5rem', { letterSpacing: '0.05em', lineHeight: '1.1em' }],
+        '3xl': ['4rem', { letterSpacing: '0.05em', lineHeight: '1.1em' }],
       }
     },
-  },
-  plugins: [],
+  }
 } satisfies Config;
