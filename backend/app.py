@@ -46,14 +46,14 @@ def login():
     return jsonify({'msg': "The username or password is incorrect"}), 401
 
 
-@app.route("/user", methods=["GET"])
+@app.route("/user/data", methods=["GET"])
 @jwt_required()
 def email():
     current_user = get_jwt_identity()
     user_from_db = db.users.find_one({'username': current_user})
     
     if user_from_db:
-        return jsonify({'msg': "Success", 'email': user_from_db["email"]}), 200
+        return jsonify({'msg': "Success", 'payload': user_from_db}), 200
     else:
         return jsonify({'msg': "Profile not found."}), 404
     
