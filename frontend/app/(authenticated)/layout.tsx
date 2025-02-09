@@ -13,7 +13,7 @@ export default function Test({children,}: Readonly<{children: React.ReactNode;}>
           </Link>
           <div className="space-x-4">
             <Link href="/quests" className="text-white hover:text-gray-400">Quests</Link>
-            <Link href="/path" className="text-white hover:text-gray-400">Path</Link>
+            <Link href="/story" className="text-white hover:text-gray-400">Story</Link>
             <Link href="/rewards" className="text-white hover:text-gray-400">Rewards</Link>
             <Link href="/profile" className="text-white hover:text-gray-400">Profile</Link>
           </div>

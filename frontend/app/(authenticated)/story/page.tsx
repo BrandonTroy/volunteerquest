@@ -2,7 +2,7 @@ import React from 'react';
 import CompletedQuest from '@/components/completedQuest';
 import '@/app/globals.css';
 
-const CompletedQuestsPage = () => {
+const StoryPage = () => {
   const quests = [
     { title: "Quest 6", org: "Organization 6", date: "00/00/0000", xp: "0", story: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Id optio natus assumenda nulla, ea perspiciatis, recusandae eos doloribus molestias aliquam commodi? Modi obcaecati nulla vitae aut temporibus, quia sunt consectetur." },
     { title: "Quest 5", org: "Organization 5", date: "00/00/0000", xp: "0", story: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Id optio natus assumenda nulla, ea perspiciatis, recusandae eos doloribus molestias aliquam commodi? Modi obcaecati nulla vitae aut temporibus, quia sunt consectetur." },
@@ -17,7 +17,7 @@ const CompletedQuestsPage = () => {
       {quests.map((quest, index) => (
         <div
           key={index}
-          className={`${index % 2 === 0 ? 'ml-3' : '-ml-3'}`}
+          className={`${index % 2 === 0 ? 'md:ml-3' : 'md:-ml-3'}`}
         >
           <CompletedQuest {...quest} />
         </div>
@@ -26,4 +26,4 @@ const CompletedQuestsPage = () => {
   );
 }
 
-export default CompletedQuestsPage;
+export default StoryPage;
