@@ -1,5 +1,5 @@
 from langchain_core.prompts import PromptTemplate
-from prompts import *
+from backend.prompt_library import hero_journey
 from langchain_groq import ChatGroq
 from langchain_core.output_parsers import JsonOutputParser 
 
@@ -15,7 +15,7 @@ def test_llm_instance():
     print(response.content)
 
 
-def generate_story(ROLE, THEME, ACTUAL_TASK):
+def generate_entire_story(ROLE, THEME, ACTUAL_TASK):
     """
     ROLE : str : LLM role
     THEME : str : Theme of the story to be followed, for example, Harry Potter or Lord of the Rings.
@@ -51,11 +51,54 @@ def extract_rewards(text):
     response = chain_extract.invoke(input = {"text" : text})
     return response
 
-if __name__ == "__main__":
-    test_llm_instance()
-    test_reply = generate_story(ROLE_1, THEME_1, ACTUAL_TASK_1)
+
+# mongo DB statements to fetch the data
+def get_percent_done(db, username):
+    pass 
+
+# org_quest
+def get_quest_real_desc():
+    pass
+
+def get_theme_new_chapter():
+    pass
+
+def get_desc_current_chapter():
+    pass
+
+data = {
+    "hero_journey" : hero_journey[get_percent_done()],
+    "theme_new_chapter" : get_theme_new_chapter(),
+    "quest_real_desc" : get_quest_real_desc(),
+    "desc_current_chapter" : get_desc_current_chapter()}
+
+def generate_next_chapter(desc_current_chapter, theme_current_chapter, quest_real_desc, percent_done):
+    """
+    desc_current_chapter : str : Description of the current chapter.
+    theme_current_chapter : str : Theme of the current chapter, for example, Harry Potter. 
+    quest_real_desc : str : Real world task to be performed by the user.
+    percent_done : float : Percentage of the task done by the group or individual so far.
+
+    """
+    prompt_generate_next_chapter = PromptTemplate.from_template("""You are given a current stage of an existing storyline that is as follows = [{desc_current_chapter}] or just the description of the task(if story stage is null). 
+You have to WEAVE the old story, characters and theme and segue into the new theme(by a clever crossover among characters) with the next chapter for the STAGE = [{hero_journey}] and generate a unique continuing story based in the {theme_new_chapter} universe.
+For your context here is the descirpiton of the actual task that this new story should be a part of, REAL_TASK = [{quest_real_desc}]. I also want you to clearly state Text and the TASK for each. The TASK here would be a real world task but still hinting to the storyline. 
+This is something that they can actually do. Ask them for tangible outputs from these tasks for proof. OUTPUT should be in a JSON OBJECT format (not an array, no preamble) containing three things : 1) chapter_text(AROUND 150 words) 2) Task 3) Proof 
+""")
+    
+
+    chain_extract = prompt_generate_next_chapter | llm
+    response = chain_extract.invoke(input = {"desc_current_chapter" : desc_current_chapter, 
+                                             "theme_new_chapter" : theme_current_chapter,
+                                               "quest_real_desc" : quest_real_desc, 
+                                                "hero_journey" : hero_journey[get_percent_done()],})
     json_parser = JsonOutputParser()
-    # this is the final json output
-    json_rep = json_parser.parse(test_reply.content)
-    print(json_rep)
+    return json_parser.parse(response.content)
+
+# if __name__ == "__main__":
+#     test_reply = generate_next_chapter(data)
+#     json_parser = JsonOutputParser()
+#     # this is the final json output
+#     json_rep = json_parser.parse(test_reply.content)
+#     print(json_rep)
 
