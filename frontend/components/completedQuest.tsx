@@ -5,14 +5,15 @@ interface Props {
   title: string;
   org: string;
   date: string;
+  xp: string;
   story: string;
 }
 
-const CompletedQuest: React.FC<Props> = ({ title, org, date, story }) => {
+const CompletedQuest: React.FC<Props> = ({ title, org, date, xp, story }) => {
   return (
-    <div className="flex">
-      <Quest title={title} org={org} date={date} />
-      <p className="my-auto">
+    <div className="flex items-center gap-3">
+      <Quest title={title} org={org} date={date} xp={`XP Earned: ${xp}`} />
+      <p>
         {story}
       </p>
     </div>
