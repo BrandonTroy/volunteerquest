@@ -111,7 +111,11 @@ const UserProfile: React.FC = () => {
       </div>
 
     </div>
-    : <div>Loading...</div>
+    : <div className="flex items-center justify-center h-screen">
+        <div className="text-2xl text-white">
+          Loading...
+        </div>
+      </div>
   );
 };
 

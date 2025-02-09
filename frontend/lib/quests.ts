@@ -14,3 +14,13 @@ export const getQuests = async () => {
     throw error;
   }
 };
+
+export const getStories = async () => {
+  try {
+    const response = await getUser();
+    return {data: response.data.stories};
+  } catch (error) {
+    console.log('Error fetching quests:', error);
+    throw error;
+  }
+};
