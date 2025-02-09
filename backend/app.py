@@ -7,8 +7,8 @@ from flask import current_app, g, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 
-from __init__ import create_app, create_jwt
-from api import create_db, add_user
+from __init__ import create_app, create_jwt, create_db
+
 
 app = create_app()
 db = create_db(app)
