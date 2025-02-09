@@ -3,4 +3,5 @@ Flask-Login
 pymongo[srv]
 Flask-PyMongo
 Flask-Cors
+flask-jwt-extended
 Werkzeug

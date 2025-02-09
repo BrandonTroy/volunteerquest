@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_pymongo import PyMongo
+from flask_jwt_extended import JWTManager
+from datetime import timedelta
 
 
 def create_app():
@@ -12,5 +14,12 @@ def create_app():
 
     with app.app_context():
         app.config["MONGO_URI"] = uri
+        app.config["JWT_SECRET_KEY"] = '3d0a4d08c094628a051fb6ee8a825f4f'
+        app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
+        app.config["JWT_TOKEN_LOCATION"] = ["headers"]
 
     return app
+
+
+def create_jwt(app):
+    return JWTManager(app)
