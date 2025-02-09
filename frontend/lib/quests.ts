@@ -24,3 +24,13 @@ export const getStories = async () => {
     throw error;
   }
 };
+
+export const getGuild  =async () => {
+  try {
+    const response = await getUser();
+    return {data: response.data.guild};
+  } catch (error) {
+    console.log('Error fetching quests:', error);
+    throw error;
+  }
+};
