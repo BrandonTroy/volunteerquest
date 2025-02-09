@@ -22,7 +22,3 @@ body {
   background-position: center;
   background-repeat: no-repeat;
 }
-
-input[type="range"]::-webkit-slider-thumb, input[type="range"]::-moz-range-thumb {
-  background: #91B898 !important;
-}
