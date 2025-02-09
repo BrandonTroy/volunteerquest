@@ -10,7 +10,7 @@ const Reward: React.FC<Props> = ({title, value, cost}) => {
   return (
     <div className="bg-theme-yellow flex flex-col items-center justify-center p-4 m-4 rounded-lg">
       <div className="max-w-[20rem] min-w-[15rem] h-auto flex flex-col items-center">
-        <h1 className="text-black text-lg mb-0 p-0 leading-none">
+        <h1 className="text-black text-center text-lg mb-0 p-0 leading-none">
           {title}
         </h1>
         <p className="text-black text-base">
