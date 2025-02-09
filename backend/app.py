@@ -8,6 +8,7 @@ from flask import current_app, g, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from flask_cors import CORS
+import datetime
 
 from __init__ import create_app, create_jwt, create_db
 
@@ -18,20 +19,32 @@ db = create_db(app)
 jwt = create_jwt(app)
 
 
+# Tested - Successful
 @app.route('/register', methods=["POST"])
 def register():
     user = request.get_json()
     username = user["username"]
     password = user["password"]
     email = user["email"]
+    interests = db.config.find_one()["default_interests"]
+    bio = db.config.find_one()["default_bio"]
+    theme = db.config.find_one()["default_theme"]
+    # Default Empty Lists
+    current_quests = []
+    stats = {}
+    friends = []
+    guild = {}
+    stories = []
 
     if db.users.find_one({'username': username}):
         return jsonify({'msg': "Username already exists!"}), 409
     else:
-        db.users.insert_one({'username': username, 'password': generate_password_hash(password), 'email': email})
+        db.users.insert_one({'username': username, 'password': generate_password_hash(password), 'email': email, "interests": interests, "bio": bio, 
+                             "current_quests": current_quests, "stats": stats, "friends": friends, "guild": guild, "stories": stories, "theme": theme})
         return jsonify({'msg': "User created successfully!"}), 201
 
 
+# Tested - Successful
 @app.route('/login', methods=["POST"])
 def login():
     login = request.get_json()
@@ -41,33 +54,149 @@ def login():
     user = db.users.find_one({'username': username})
     
     if user and check_password_hash(user["password"], password):
-            token = create_access_token(identity=user['username'])
-            response = make_response("token")
-            response.set_cookie("token", token, max_age=3600, samesite='Lax', secure=False)
-            return response, 200
+        token = create_access_token(identity=user['username'])
+        response = make_response("token")
+        response.set_cookie("token", token, max_age=3600, samesite='Lax', secure=False)
+        return response, 200
     
     return jsonify({'msg': "The username or password is incorrect"}), 401
 
 
-@app.route("/user/data", methods=["GET"])
+# Updates user data including interests, bio, and email, Tested - Successful
+@app.route("/user", methods=["GET", "PUT"])
 @jwt_required()
 def get_user():
     try:
         current_user = get_jwt_identity()
     except:
-        return 401
+        return jsonify({'msg': 'Unauthorized'}), 401
     
     user_from_db = db.users.find_one({'username': current_user})
-    
-    if user_from_db:
+    if not user_from_db:
+        return jsonify({'msg': "Profile not found."}), 404
+
+    if request.method == "GET":    
         return jsonify({'msg': "Success", 'payload': user_from_db}), 200
     else:
-        return jsonify({'msg': "Profile not found."}), 404
+        data = request.get_json()
+        update_fields = {}
+
+        if "interests" in data:
+            update_fields["interests"] = data["interests"]
+        if "bio" in data:
+            update_fields["bio"] = data["bio"]
+        if "email" in data:
+            update_fields["email"] = data["email"]
+        if "theme" in data:
+            update_fields["theme"] = data["theme"]
+
+        if update_fields:
+            db.users.update_one({
+                'username': current_user},
+                {'$set': update_fields}
+            )
+
+            return jsonify({"msg": "Profile updated successfully."}), 200
+        else:
+            # I don't think this should throw an error
+            return jsonify({"msg": "No fields updated."}), 200
     
 
-@app.route("/config/data", methods=["GET"])
+@app.route("/config", methods=["GET"])
 def config():
     return jsonify({'msg': "Success", 'payload': db.config.find()})
+
+
+@app.route("/user/complete_quest", methods=["POST"])
+@jwt_required()
+def user_complete_quest():
+    try:
+        current_user = get_jwt_identity()
+    except:
+        return jsonify({'msg': 'Unauthorized'}), 401
+    
+    # Setting the quest to completed
+    data = request.get_json()
+    db.users.update_one(
+        {"username": current_user, "user.quests.id": data["quest_id"]},
+        {"$set": {"user.quests.$.completed": True}}
+    )
+
+    # The new story, generated from the generative AI
+    story = {"title": "Default Story Title", "theme": "Default Story Theme"}
+
+
+    # Creating a new story
+    db.users.update_one(
+        {"username": current_user},
+        {"$push": {"user.stories": story}}
+    )
+
+    return jsonify({"msg": "Task Successfully Completed"}), 200
+
+
+# Function to create a new organization or get an organization by id
+@app.route("/org", methods=["GET", "POST"])
+def org():
+    org = request.get_json()
+    if request.method == "GET":
+        # Getting information about an organization
+        id = org["id"]
+        return jsonify({'msg': "Success", 'payload': db.orgs.find({'id': id})}), 200
+    else:
+        # Creating a new organization
+        username = org["username"]  # Required
+        contact = org["contact"] if "contact" in org.keys() else "null_contact"
+        description = org["description"] if "description" in org.keys() else db.config.find_one()["default_bio"]
+        quests = org["quests"] if "quests" in org.keys() else {}  # Default Empty Dictionary
+        db.orgs.insert_one({"username": username, "contact": contact, "description": description, "quests": quests})
+        return jsonify({"msg": "Organization Created Successfully"}), 201
+    
+"""
+# Function to create, join, or get information about a guild
+@app.route("/guild", methods=["GET", "POST", "PUT"])
+def guild():
+    guild = request.get_json()
+    if request.method == "GET":
+        # Getting a guild by ID
+        id = guild["id"]
+        return jsonify({"msg": "Success", "payload": db.guilds.find({"id": id})}), 200
+    elif request.method == "POST": 
+        # Creating a new guild
+        user_id = guild["user_id"]  # Required, the id of the user who started the guild
+        name = guild["name"]  # Required
+        users = [user_id]
+        expiration_date = guild["expiration_date"] if "expiration_date" in guild.keys() else datetime.datetime.now()  # Default, ideally + default duration
+        target = guild["target"] if "target" in guild.keys() else db.config.find_one()["default_target"]
+        current = 0  # Initializing progress to 0
+        active = True
+        db.guild.insert_one({"name": name, "users": users, "expiration_date": expiration_date, "target": target, "current": current, "active": active})
+        return requests.put()
+    else:
+        # Adding a user to a guild
+"""
+
+
+# Function to add a quest to an organization
+@app.route("/org/quests", methods=["POST"])
+def org_quests():
+    quest = request.get_json()
+    guild_id = quest["guild_id"]  # Required
+    name = quest["name"] if "name" in quest.keys() else db.config.find_one()["default_name"]
+    description = quest["description"] if "description" in quest.keys() else db.config.find_one()["default_bio"]
+    time = quest["time"] if "time" in quest.keys() else datetime.now()  # Defaults to the current time
+    duration = quest["duration"] if "duration" in quest.keys() else db.config.find_one()["default_quest_duration"]
+    members = quest["members"] if "members" in quest.keys() else {}  # Default empty dictionary
+    isProphecy = quest["isProphecy"] if "isProphecy" in quest.keys() else False
+    db.guilds.find_one({"id": guild_id})["quests"].append({"name": name, "description": description, "time": time, "duration": duration, "members": members, "isProphecy": isProphecy})
+    return jsonify({"msg": "Quest Added Successfully"}), 201
+
+
+# Function to add a quest to a user - like assigning them to the user
+@app.route("/user/quests", methods=["POST"])
+def user_quests():
+    return jsonify({"msg": "Failure Unimplemented"})
+
     
 
 # Deprecated
