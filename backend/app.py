@@ -157,9 +157,8 @@ def user_complete_quest():
 
     # Call gen ai with num_chapters, org_quest, user theme
     # Grabbing the previous chapter, if it exists, otherwise empty text
-    prev_chapter = story["quests"][-1] if len(story["quests"]) > 0 else ""
+    prev_chapter = story["quests"][-1]["chapter"]["chapter_text"] if len(story["quests"]) > 0 else ""
     percent_complete = len(story["quests"]) / story["max_length"]
-    print(user_from_db["current_quests"], data["quest_id"])
     org_quest_id = [quest for quest in user_from_db["current_quests"] if quest["org_quest"] == data["quest_id"]][0]["org_quest"]
     org_quest = db.org_quest.find_one({"_id": ObjectId(org_quest_id)})
     story_quest = {"username": current_user, "org_quest": org_quest_id, "chapter": generate_next_chapter(prev_chapter, user_from_db["theme"], org_quest["description"], percent_complete)}

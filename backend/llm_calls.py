@@ -81,18 +81,19 @@ def generate_next_chapter(desc_current_chapter, theme_current_chapter, quest_rea
     percent_done : float : Percentage of the task done by the group or individual so far.
 
     """
-    prompt_generate_next_chapter = PromptTemplate.from_template("""You are given a current stage of an existing storyline that is as follows = [{desc_current_chapter}] or just the description of the task(if story stage is null). 
-You have to WEAVE the old story, characters and theme and segue into the new theme(by a clever crossover among characters) with the next chapter for the STAGE = [{hero_journey}] and generate a unique continuing story based in the {theme_new_chapter} universe.
+    prompt_generate_next_chapter = PromptTemplate.from_template("""You are given a current stage of an existing storyline that is as follows = [{desc_current_chapter}]. If this is null, start a new story from scratch using the following information.
+You have to WEAVE the old story, characters and theme and segue into the new theme(by a clever crossover among characters) with the next chapter for the STAGE = [{stage}] and generate a unique continuing story based in the {theme_new_chapter} universe. 
 For your context here is the descirpiton of the actual task that this new story should be a part of, REAL_TASK = [{quest_real_desc}]. I also want you to clearly state Text and the TASK for each. The TASK here would be a real world task but still hinting to the storyline. 
-This is something that they can actually do. Ask them for tangible outputs from these tasks for proof. OUTPUT should be in a JSON OBJECT format (not an array, no preamble) containing three things : 1) chapter_text(AROUND 150 words) 2) Task 3) Proof 
+This is something that they can actually do. Ask them for tangible outputs from these tasks for proof. OUTPUT should be in a JSON OBJECT format (not an array, no preamble). OUTPUT ONLY valid JSON containing three things : 1) chapter_text(AROUND 150 words) 2) Task 3) Proof.
+This is an example of the output format that you should follow (imagine the following is a JSON object with parenthesis replaced by braces): ("chapter_text" : "Once upon a time", "Task" : "Plant a tree", "Proof" : "A picture of the tree planted").
 """)
     
 
     chain_extract = prompt_generate_next_chapter | llm
-    response = chain_extract.invoke(input = {"desc_current_chapter" : desc_current_chapter, 
+    response = chain_extract.invoke(input = {"desc_current_chapter" : (desc_current_chapter if desc_current_chapter else "null"), 
                                              "theme_new_chapter" : theme_current_chapter,
                                                "quest_real_desc" : quest_real_desc, 
-                                                "hero_journey" : hero_journey[int(percent_done * 7)],})
+                                                "stage" : hero_journey[int(percent_done * 7)]})
     json_parser = JsonOutputParser()
     return json_parser.parse(response.content)
 
